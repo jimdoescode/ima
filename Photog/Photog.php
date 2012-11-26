@@ -36,9 +36,9 @@ function run($app, $operation)
     }
 }
 
-function implode_aliases($glue)
+function implode_config_params($params, $glue)
 {
-    return Config::main('dimension_aliases')->alter(function($items) use($glue)
+    return Config::main($params)->alter(function($items) use($glue)
     {
         $keys = array_keys($items);
         return implode($glue, $keys);

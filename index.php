@@ -41,7 +41,7 @@ $app->get('/resize(/:dims)', function($dims = 'default') use($app)
         return $new_image;
     });
 
-})->conditions(['dims' => '\d+x\d+|\d+x|x\d+|'.\Photog\implode_aliases('|')]);
+})->conditions(['dims' => '\d+x\d+|\d+x|x\d+|'.\Photog\implode_config_params('dimension_aliases', '|')]);
 
 
 $app->get('/rotate(/:deg)', function($deg = -90) use($app)
@@ -52,6 +52,7 @@ $app->get('/rotate(/:deg)', function($deg = -90) use($app)
     });
 
 })->conditions(['deg' => '\d+|\-\d+']);
+
 
 $app->get('/crop/:tl(/:br)', function($tl, $br = null) use($app)
 {
@@ -74,6 +75,20 @@ $app->get('/crop/:tl(/:br)', function($tl, $br = null) use($app)
     });
 
 })->conditions(['tl'=>'\d+,\d+', 'br'=>'\d+,\d+']); //This doesn't match for some reason
+
+
+$app->get('/filter/:type', function($type) use($app)
+{
+    \Photog\run($app, function($raw, $meta) use($type)
+    {
+        $new_image = imagecreatetruecolor($meta[0], $meta[1]);
+        imagecopyresampled($new_image, $raw, 0, 0, 0, 0, $meta[0], $meta[1], $meta[0], $meta[1]);
+        imagefilter($new_image, \Photog\Config::main('filters')[$type]);
+
+        return $new_image;
+    });
+
+})->conditions(['type' => \Photog\implode_config_params('filters', '|')]);;
 
 /**
  * Step 4: Run the Slim application
