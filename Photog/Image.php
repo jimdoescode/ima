@@ -54,7 +54,6 @@ class Image
 
         if(is_null($image))
             $this->errors[] = 'Could not perform operation.';
-
         else
         {
             imagejpeg($image);

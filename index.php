@@ -32,26 +32,7 @@ $app = new \Slim\Slim();
  */
 $app->get('/resize(/:dims)', function($dims = 'default') use($app)
 {
-    if(!array_key_exists('src', $_GET))
-        $app->halt(400, 'No source image specified.');
-
-    $remote = $_GET['src'];
-    $path = \Photog\cache($remote);
-
-    if(is_null($path))
-        $app->halt(400, 'Could not locate this image.');
-
-    $image = new \Photog\Image($path);
-    if($image->has_errors())
-    {
-        \Photog\uncache($remote);
-        $app->halt(400, $image->get_error());
-    }
-
-    $response = $app->response();
-    $response['Content-Type'] = 'image/jpeg';
-
-    $image->operate(function($raw, $meta) use($dims)
+    \Photog\run($app, function($raw, $meta) use($dims)
     {
         $dims = \Photog\Image::parse_dims($dims, $meta[0], $meta[1]);
         $new_image = imagecreatetruecolor($dims[0], $dims[1]);
@@ -60,74 +41,26 @@ $app->get('/resize(/:dims)', function($dims = 'default') use($app)
         return $new_image;
     });
 
-    if($image->has_errors())
-    {
-        $response['Content-Type'] = 'text/html';
-        $app->halt(400, $image->get_error());
-    }
-
 })->conditions(['dims' => '\d+x\d+|\d+x|x\d+|'.\Photog\implode_aliases('|')]);
 
 
 $app->get('/rotate(/:deg)', function($deg = -90) use($app)
 {
-    if(!array_key_exists('src', $_GET))
-        $app->halt(400, 'No source image specified.');
-
-    $remote = $_GET['src'];
-    $path = \Photog\cache($remote);
-    if(is_null($path))
-        $app->halt(400, 'Could not locate this image.');
-
-    $image = new \Photog\Image($path);
-    if($image->has_errors())
-    {
-        \Photog\uncache($remote);
-        $app->halt(400, $image->get_error());
-    }
-
-    $response = $app->response();
-    $response['Content-Type'] = 'image/jpeg';
-
-    $image->operate(function($raw, $meta) use($deg)
+    \Photog\run($app, function($raw, $meta) use($deg)
     {
         return imagerotate($raw, $deg, 0);
     });
 
-    if($image->has_errors())
-    {
-        $response['Content-Type'] = 'text/html';
-        $app->halt(400, $image->get_error());
-    }
-
 })->conditions(['deg' => '\d+|\-\d+']);
 
-$app->get('/crop/:topleft(/:botright)', function($topleft, $botright = null) use($app)
+$app->get('/crop/:tl(/:br)', function($tl, $br = null) use($app)
 {
-    if(!array_key_exists('src', $_GET))
-        $app->halt(400, 'No source image specified.');
-
-    $remote = $_GET['src'];
-    $path = \Photog\cache($remote);
-    if(is_null($path))
-        $app->halt(400, 'Could not locate this image.');
-
-    $image = new \Photog\Image($path);
-    if($image->has_errors())
+    \Photog\run($app, function($raw, $meta) use($tl, $br)
     {
-        \Photog\uncache($remote);
-        $app->halt(400, $image->get_error());
-    }
+        $tl = \Photog\Image::parse_point($tl, 0, 0);
+        $br = \Photog\Image::parse_point($br, $meta[0], $meta[1]);
 
-    $response = $app->response();
-    $response['Content-Type'] = 'image/jpeg';
-
-    $image->operate(function($raw, $meta) use($topleft, $botright)
-    {
-        $tl = \Photog\Image::parse_point($topleft, 0, 0);
-        $br = \Photog\Image::parse_point($botright, $meta[0], $meta[1]);
-
-        $width = $br[0] - $tl[0];
+        $width  = $br[0] - $tl[0];
         $height = $br[1] - $tl[1];
 
         if($width > 0 && $height > 0)
@@ -140,13 +73,7 @@ $app->get('/crop/:topleft(/:botright)', function($topleft, $botright = null) use
         return null;
     });
 
-    if($image->has_errors())
-    {
-        $response['Content-Type'] = 'text/html';
-        $app->halt(400, $image->get_error());
-    }
-
-});//->conditions(['topleft'  => '^\d+,\d+$']); //This doesn't match for some reason
+})->conditions(['tl'=>'\d+,\d+', 'br'=>'\d+,\d+']); //This doesn't match for some reason
 
 /**
  * Step 4: Run the Slim application

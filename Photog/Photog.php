@@ -2,6 +2,40 @@
 
 require 'Config.php';
 
+/**
+ * @param $app \Slim\Slim
+ * @param $operation
+ */
+function run($app, $operation)
+{
+    if(!array_key_exists('src', $_GET))
+        $app->halt(400, 'No source image specified.');
+
+    $remote = $_GET['src'];
+    $path = cache($remote);
+
+    if(is_null($path))
+        $app->halt(400, 'Could not locate this image.');
+
+    $image = new Image($path);
+    if($image->has_errors())
+    {
+        uncache($remote);
+        $app->halt(400, $image->get_error());
+    }
+
+    $response = $app->response();
+    $response['Content-Type'] = 'image/jpeg';
+
+    $image->operate($operation);
+
+    if($image->has_errors())
+    {
+        $response['Content-Type'] = 'text/html';
+        $app->halt(400, $image->get_error());
+    }
+}
+
 function implode_aliases($glue)
 {
     return Config::main('dimension_aliases')->alter(function($items) use($glue)
@@ -44,4 +78,3 @@ function uncache($remote)
     if(file_exists($path))
         unlink($path);
 }
-
