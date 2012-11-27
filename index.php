@@ -30,6 +30,12 @@ $app = new \Slim\Slim();
  * argument for `Slim::get`, `Slim::post`, `Slim::put`, and `Slim::delete`
  * is an anonymous function.
  */
+$app->get('/', function() use($app)
+{
+
+});
+
+
 $app->get('/resize(/:dims)', function($dims = 'default') use($app)
 {
     \Photog\run($app, function($raw, $meta) use($dims)

@@ -5,6 +5,7 @@ class Image
     private $meta;
     private $raw;
     private $errors = [];
+    public $content = 'image/jpeg';
 
     public function __construct($path)
     {
@@ -28,7 +29,7 @@ class Image
                 $image = imagecreatefromjpeg($path);
                 break;
             case IMAGETYPE_GIF:
-                $image = imagecreatefromgif($path);
+                $image = $this->imagecreatefromgif($path);
                 break;
             case IMAGETYPE_PNG:
                 $image = imagecreatefrompng($path);
@@ -36,6 +37,15 @@ class Image
         }
 
         return $image;
+    }
+
+    private function imagecreatefromgif($path)
+    {
+        require('third_party/GIFDecoder.class.php');
+        require('third_party/GIFEncoder.class.php');
+        $decoder = new \GIFDecoder(file_get_contents($path));
+        $this->meta[] = $decoder->GIFGetDelays();
+        return $decoder->GIFGetFrames();
     }
 
     public function has_errors()
@@ -50,10 +60,31 @@ class Image
 
     public function operate($operation)
     {
-        $image = $operation($this->raw, $this->meta);
+        $image = null;
+        if(is_array($this->raw))
+        {
+            foreach($this->raw as $frame)
+            {
+                $frameimg = imagecreatefromstring($frame);
+                $newframe = $operation($frameimg, $this->meta);
+                ob_start();
+                imagegif($newframe);
+                $image[] = ob_get_contents(); // read from buffer
+                ob_end_clean(); // delete buffer
+                imagedestroy($frameimg);
+            }
+        }
+        else
+            $image = $operation($this->raw, $this->meta);
 
         if(is_null($image))
             $this->errors[] = 'Could not perform operation.';
+        elseif(is_array($image))
+        {
+            $this->content = 'image/gif';
+            $encoder = new \GIFEncoder($image, end($this->meta), 0, 2, 0, 0, 0, 'bin');
+            echo $encoder->GetAnimation();
+        }
         else
         {
             imagejpeg($image);

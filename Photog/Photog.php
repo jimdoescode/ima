@@ -25,7 +25,7 @@ function run($app, $operation)
     }
 
     $response = $app->response();
-    $response['Content-Type'] = 'image/jpeg';
+    $response['Content-Type'] = $image->content;
 
     $image->operate($operation);
 
