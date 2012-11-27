@@ -2,6 +2,8 @@
 
 return [
 
+    'base_url' => 'http://localhost/photohost',
+
     'cache_directory' => 'cache',
 
     'dimension_aliases' => [

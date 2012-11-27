@@ -32,10 +32,13 @@ $app = new \Slim\Slim();
  */
 $app->get('/', function() use($app)
 {
-
+    $app->render('home.php');
 });
 
-
+/**
+ * Route to resize an image
+ * Optional: Dimensions to resize the image to.
+ */
 $app->get('/resize(/:dims)', function($dims = 'default') use($app)
 {
     \Photog\run($app, function($raw, $meta) use($dims)
@@ -49,7 +52,10 @@ $app->get('/resize(/:dims)', function($dims = 'default') use($app)
 
 })->conditions(['dims' => '\d+x\d+|\d+x|x\d+|'.\Photog\implode_config_params('dimension_aliases', '|')]);
 
-
+/**
+ * Route to rotate an image
+ * Optional: Rotation amount in degrees
+ */
 $app->get('/rotate(/:deg)', function($deg = -90) use($app)
 {
     \Photog\run($app, function($raw, $meta) use($deg)
@@ -59,7 +65,11 @@ $app->get('/rotate(/:deg)', function($deg = -90) use($app)
 
 })->conditions(['deg' => '\d+|\-\d+']);
 
-
+/**
+ * Route to crop an image
+ * Required: Top left corner to start crop.
+ * Optional: Bottom right corner to stop crop.
+ */
 $app->get('/crop/:tl(/:br)', function($tl, $br = null) use($app)
 {
     \Photog\run($app, function($raw, $meta) use($tl, $br)
@@ -82,7 +92,10 @@ $app->get('/crop/:tl(/:br)', function($tl, $br = null) use($app)
 
 })->conditions(['tl'=>'\d+,\d+', 'br'=>'\d+,\d+']); //This doesn't match for some reason
 
-
+/**
+ * Route to filter an image.
+ * Required: The type of filter to apply to the image. Available filters can be found in the config
+ */
 $app->get('/filter/:type', function($type) use($app)
 {
     \Photog\run($app, function($raw, $meta) use($type)
