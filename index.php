@@ -8,9 +8,9 @@
  * If you are using Composer, you can skip this step.
  */
 require 'Slim/Slim.php';
-require 'Photog/Photog.php';
-
 \Slim\Slim::registerAutoloader();
+
+require 'Photog/Photog.php';
 
 /**
  * Step 2: Instantiate a Slim application
@@ -21,6 +21,10 @@ require 'Photog/Photog.php';
  * of setting names and values into the application constructor.
  */
 $app = new \Slim\Slim();
+
+//Add middleware that will see if the url has already
+//been processed and thusly we have an image for it.
+$app->add(new \Photog\CacheMiddleware());
 
 /**
  * Step 3: Define the Slim application routes
@@ -50,7 +54,7 @@ $app->get('/resize(/:dims)', function($dims = 'default') use($app)
         return $new_image;
     });
 
-})->conditions(['dims' => '\d+x\d+|\d+x|x\d+|'.\Photog\implode_config_params('dimension_aliases', '|')]);
+})->conditions(['dims' => '\d+x\d+|\d+x|x\d+|'.implode('|', array_keys(\Photog\Config::resize('dimension_aliases')->raw()))]);
 
 /**
  * Route to rotate an image
@@ -102,12 +106,12 @@ $app->get('/filter/:type', function($type) use($app)
     {
         $new_image = imagecreatetruecolor($meta[0], $meta[1]);
         imagecopyresampled($new_image, $raw, 0, 0, 0, 0, $meta[0], $meta[1], $meta[0], $meta[1]);
-        imagefilter($new_image, \Photog\Config::main('filters')[$type]);
+        imagefilter($new_image, \Photog\Config::filter('types')[$type]);
 
         return $new_image;
     });
 
-})->conditions(['type' => \Photog\implode_config_params('filters', '|')]);;
+})->conditions(['type' => implode('|', array_keys(\Photog\Config::filter('types')->raw()))]);;
 
 /**
  * Step 4: Run the Slim application

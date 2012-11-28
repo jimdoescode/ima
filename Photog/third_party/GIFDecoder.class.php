@@ -101,8 +101,7 @@ Class GIFDecoder {
 				}
 				GIFDecoder::GIFGetByte ( $u );
 				if ( $u == 0x04 ) {
-                    error_log(print_r($this->GIF_buffer, true));
-					if ( $this->GIF_buffer [ 3/*4*/ ] & 0x80 ) {
+                    if ( $this->GIF_buffer [ 3/*4*/ ] & 0x80 ) {
 						$this->GIF_dispos [ ] = ( $this->GIF_buffer [ 0 ] >> 2 ) - 1;
 					}
 					else {

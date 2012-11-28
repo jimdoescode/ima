@@ -700,7 +700,7 @@ class Slim
      * Set the etag header and stop if the conditional GET request matches.
      * The `value` argument is a unique identifier for the current resource.
      * The `type` argument indicates whether the etag should be used as a strong or
-     * weak cache validator.
+     * weak download_cache validator.
      *
      * When the current request includes an 'If-None-Match' header with
      * a matching etag, execution is immediately stopped. If the request

@@ -48,7 +48,7 @@ namespace Slim\Middleware;
  * in any format, encrypted or not. If you need to store sensitive
  * user information in a session, you should rely on PHP's native
  * session implementation, or use other middleware to store
- * session data in a database or alternative server-side cache.
+ * session data in a database or alternative server-side download_cache.
  *
  * Because this class stores serialized session data in an HTTP cookie,
  * you are inherently limtied to 4 Kb. If you attempt to store
@@ -92,7 +92,7 @@ class SessionCookie extends \Slim\Middleware
          *
          * We must start a native PHP session to initialize the $_SESSION superglobal.
          * However, we won't be using the native session store for persistence, so we
-         * disable the session cookie and cache limiter. We also set the session
+         * disable the session cookie and download_cache limiter. We also set the session
          * handler to this class instance to avoid PHP's native session file locking.
          */
         ini_set('session.use_cookies', 0);

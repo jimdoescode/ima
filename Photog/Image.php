@@ -58,15 +58,20 @@ class Image
         return $this->has_errors() ? $this->errors[0] : null;
     }
 
-    public function operate($operation)
+    public function operate($operation, $hash)
     {
         $image = null;
+        //If this is an array that means it's an animated gif
         if(is_array($this->raw))
         {
+            //Loop through each frame of the animated gif
             foreach($this->raw as $frame)
             {
+                //Create a PHP image from the raw image string
                 $frameimg = imagecreatefromstring($frame);
+                //Apply the operation function to each frame
                 $newframe = $operation($frameimg, $this->meta);
+                //Collect the new raw image data into an array of strings
                 ob_start();
                 imagegif($newframe);
                 $image[] = ob_get_contents(); // read from buffer
@@ -83,10 +88,16 @@ class Image
         {
             $this->content = 'image/gif';
             $encoder = new \GIFEncoder($image, end($this->meta), 0, 2, 0, 0, 0, 'bin');
+            //First write the image to our processed cache to prevent having to do this again.
+            file_put_contents(configured_path('processed_cache_directory', $hash), $encoder->GetAnimation());
+            //Output the image data to the screen.
             echo $encoder->GetAnimation();
         }
         else
         {
+            //First write the image to our processed cache to prevent having to do this again.
+            imagejpeg($image, configured_path('processed_cache_directory', $hash));
+            //Output the image data to the screen.
             imagejpeg($image);
             imagedestroy($image);
         }
@@ -94,7 +105,7 @@ class Image
 
     public static function parse_dims($dimstr, $origwidth, $origheight)
     {
-        $aliases = Config::main('dimension_aliases');
+        $aliases = Config::resize('dimension_aliases');
         //NOTE: There is a bug in PHP 5.4 where array_key_exists
         //does not return the correct result for ArrayAccess objects
         if(isset($aliases[$dimstr]))
