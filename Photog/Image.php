@@ -4,7 +4,7 @@ class Image
 {
     private $meta;
     private $raw;
-    private $errors = [];
+    private $errors = array();
     public $content = 'image/jpeg';
 
     public function __construct($path)
@@ -13,39 +13,7 @@ class Image
         if($this->meta === false)
             $this->errors[] = 'Could not get image meta data.';
         else
-        {
-            $this->raw = $this->create_raw_image($this->meta[2], $path);
-            if(is_null($this->raw))
-                $this->errors[] = 'Could not grab image.';
-        }
-    }
-
-    private function create_raw_image($type, $path)
-    {
-        $image = null;
-        switch($type)
-        {
-            case IMAGETYPE_JPEG:
-                $image = imagecreatefromjpeg($path);
-                break;
-            case IMAGETYPE_GIF:
-                $image = $this->imagecreatefromgif($path);
-                break;
-            case IMAGETYPE_PNG:
-                $image = imagecreatefrompng($path);
-                break;
-        }
-
-        return $image;
-    }
-
-    private function imagecreatefromgif($path)
-    {
-        require('third_party/GIFDecoder.class.php');
-        require('third_party/GIFEncoder.class.php');
-        $decoder = new \GIFDecoder(file_get_contents($path));
-        $this->meta[] = $decoder->GIFGetDelays();
-        return $decoder->GIFGetFrames();
+            $this->raw = new \Imagick($path);
     }
 
     public function has_errors()
@@ -60,47 +28,15 @@ class Image
 
     public function operate($operation, $hash)
     {
-        $image = null;
-        //If this is an array that means it's an animated gif
-        if(is_array($this->raw))
-        {
-            //Loop through each frame of the animated gif
-            foreach($this->raw as $frame)
-            {
-                //Create a PHP image from the raw image string
-                $frameimg = imagecreatefromstring($frame);
-                //Apply the operation function to each frame
-                $newframe = $operation($frameimg, $this->meta);
-                //Collect the new raw image data into an array of strings
-                ob_start();
-                imagegif($newframe);
-                $image[] = ob_get_contents(); // read from buffer
-                ob_end_clean(); // delete buffer
-                imagedestroy($frameimg);
-            }
-        }
-        else
-            $image = $operation($this->raw, $this->meta);
+        foreach($this->raw as $frame)
+            $operation($frame, $this->meta);
 
-        if(is_null($image))
-            $this->errors[] = 'Could not perform operation.';
-        elseif(is_array($image))
-        {
-            $this->content = 'image/gif';
-            $encoder = new \GIFEncoder($image, end($this->meta), 0, 2, 0, 0, 0, 'bin');
-            //First write the image to our processed cache to prevent having to do this again.
-            file_put_contents(configured_path('processed_cache_directory', $hash), $encoder->GetAnimation());
-            //Output the image data to the screen.
-            echo $encoder->GetAnimation();
-        }
+        $this->content = $this->meta['mime'];
+
+        if(strtolower($this->meta['mime']) === 'image/gif')
+            echo $this->raw->getimagesblob();
         else
-        {
-            //First write the image to our processed cache to prevent having to do this again.
-            imagejpeg($image, configured_path('processed_cache_directory', $hash));
-            //Output the image data to the screen.
-            imagejpeg($image);
-            imagedestroy($image);
-        }
+            echo $this->raw->getimageblob();
     }
 
     public static function parse_dims($dimstr, $origwidth, $origheight)
@@ -112,7 +48,7 @@ class Image
             $dimstr = $aliases[$dimstr];
 
         if(is_null($dimstr))
-            $dims = [$origwidth, $origheight];
+            $dims = array($origwidth, $origheight);
         else
             $dims = explode('x', $dimstr);
 
@@ -128,8 +64,9 @@ class Image
     public static function parse_point($ptstr, $defx, $defy)
     {
         if(is_null($ptstr))
-            return [$defx, $defy];
+            return array($defx, $defy);
 
         return explode(',',$ptstr);
     }
+
 }

@@ -1,4 +1,7 @@
 <?php
+
+ini_set('max_execution_time', 360);
+
 /**
  * Step 1: Require the Slim Framework
  *
@@ -45,16 +48,13 @@ $app->get('/', function() use($app)
  */
 $app->get('/resize(/:dims)', function($dims = 'default') use($app)
 {
-    \Photog\run($app, function($raw, $meta) use($dims)
+    \Photog\run($app, function(&$raw, $meta) use($dims)
     {
-        $dims = \Photog\Image::parse_dims($dims, $meta[0], $meta[1]);
-        $new_image = imagecreatetruecolor($dims[0], $dims[1]);
-        imagecopyresampled($new_image, $raw, 0, 0, 0, 0, $dims[0], $dims[1], $meta[0], $meta[1]);
-
-        return $new_image;
+        $dims = \Photog\Image2::parse_dims($dims, $meta[0], $meta[1]);
+        $raw->resizeImage($dims[0], $dims[1], Imagick::FILTER_LANCZOS, 0);
     });
 
-})->conditions(['dims' => '\d+x\d+|\d+x|x\d+|'.implode('|', array_keys(\Photog\Config::resize('dimension_aliases')->raw()))]);
+})->conditions(array('dims' => '\d+x\d+|\d+x|x\d+|'.implode('|', array_keys(\Photog\Config::resize('dimension_aliases')->raw()))));
 
 /**
  * Route to rotate an image
@@ -62,12 +62,12 @@ $app->get('/resize(/:dims)', function($dims = 'default') use($app)
  */
 $app->get('/rotate(/:deg)', function($deg = -90) use($app)
 {
-    \Photog\run($app, function($raw, $meta) use($deg)
+    \Photog\run($app, function(&$raw, $meta) use($deg)
     {
-        return imagerotate($raw, $deg, 0);
+        $raw->rotateImage(new ImagickPixel('#00000000'), $deg);
     });
 
-})->conditions(['deg' => '\d+|\-\d+']);
+})->conditions(array('deg' => '\d+|\-\d+'));
 
 /**
  * Route to crop an image
@@ -76,7 +76,7 @@ $app->get('/rotate(/:deg)', function($deg = -90) use($app)
  */
 $app->get('/crop/:tl(/:br)', function($tl, $br = null) use($app)
 {
-    \Photog\run($app, function($raw, $meta) use($tl, $br)
+    \Photog\run($app, function(&$raw, $meta) use($tl, $br)
     {
         $tl = \Photog\Image::parse_point($tl, 0, 0);
         $br = \Photog\Image::parse_point($br, $meta[0], $meta[1]);
@@ -85,33 +85,25 @@ $app->get('/crop/:tl(/:br)', function($tl, $br = null) use($app)
         $height = $br[1] - $tl[1];
 
         if($width > 0 && $height > 0)
-        {
-            $new_image = imagecreatetruecolor($width, $height);
-            imagecopyresampled($new_image, $raw, 0, 0, $tl[0], $tl[1], $width, $height, $width, $height);
-
-            return $new_image;
-        }
-        return null;
+            $raw->cropImage($width, $height, $tl[0], $tl[1]);
     });
 
-})->conditions(['tl'=>'\d+,\d+', 'br'=>'\d+,\d+']); //This doesn't match for some reason
+})->conditions(array('tl'=>'\d+,\d+', 'br'=>'\d+,\d+')); //This doesn't match for some reason
 
 /**
  * Route to filter an image.
  * Required: The type of filter to apply to the image. Available filters can be found in the config
  */
-$app->get('/filter/:type', function($type) use($app)
+$app->get('/filter/:type(/:params)', function($type, $params = null) use($app)
 {
-    \Photog\run($app, function($raw, $meta) use($type)
+    \Photog\run($app, function($raw, $meta) use($type, $params)
     {
-        $new_image = imagecreatetruecolor($meta[0], $meta[1]);
-        imagecopyresampled($new_image, $raw, 0, 0, 0, 0, $meta[0], $meta[1], $meta[0], $meta[1]);
-        imagefilter($new_image, \Photog\Config::filter('types')[$type]);
-
-        return $new_image;
+        $args = \Photog\Image::parse_point($params, 0, 1);
+        $filters = \Photog\Config::filter('types');
+        call_user_func_array(array($raw, $filters[$type]), $args);
     });
 
-})->conditions(['type' => implode('|', array_keys(\Photog\Config::filter('types')->raw()))]);;
+})->conditions(array('type' => implode('|', array_keys(\Photog\Config::filter('types')->raw()))));;
 
 /**
  * Step 4: Run the Slim application

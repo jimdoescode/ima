@@ -1,10 +1,10 @@
 <?php
 
-return [
+return array(
 
-    'base_url' => 'http://localhost/photohost',
+    'base_url' => 'http://ima.jimsaunders.net',
 
     'remote_cache_directory' => 'cache/remote',
     'processed_cache_directory' => 'cache/processed',
 
-];
+);

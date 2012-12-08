@@ -2,7 +2,7 @@
 
 class Config
 {
-    private static $files = [];
+    private static $files = array();
 
     /**
      * @param $name
@@ -17,7 +17,7 @@ class Config
         if(!empty($params))
         {
             $values = self::$files[$name];
-            $result = [];
+            $result = array();
             foreach($params as $param)
                 $result[] = $values[$param];
 
@@ -29,7 +29,7 @@ class Config
 
 class ConfigCollection implements \ArrayAccess, \Countable, \IteratorAggregate
 {
-    private $items = [];
+    private $items = array();
 
     public function __construct($items)
     {
