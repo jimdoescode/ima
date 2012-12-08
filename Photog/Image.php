@@ -34,9 +34,15 @@ class Image
         $this->content = $this->meta['mime'];
 
         if(strtolower($this->meta['mime']) === 'image/gif')
+        {
             echo $this->raw->getimagesblob();
+            $this->raw->writeimages(configured_path('processed_cache_directory', $hash), true);
+        }
         else
+        {
             echo $this->raw->getimageblob();
+            $this->raw->writeimage(configured_path('processed_cache_directory', $hash));
+        }
     }
 
     public static function parse_dims($dimstr, $origwidth, $origheight)
