@@ -96,7 +96,7 @@ $app->get('/crop/:tl(/:br)', function($tl, $br = null) use($app)
  */
 $app->get('/filter/:type(/:params)', function($type, $params = null) use($app)
 {
-    \Photog\run($app, function($raw, $meta) use($type, $params)
+    \Photog\run($app, function(&$raw, $meta) use($type, $params)
     {
         $args = \Photog\Image::parse_point($params, 0, 1);
         $filters = \Photog\Config::filter('types');
