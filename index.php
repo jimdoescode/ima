@@ -50,7 +50,7 @@ $app->get('/resize(/:dims)', function($dims = 'default') use($app)
 {
     \Photog\run($app, function(&$raw, $meta) use($dims)
     {
-        $dims = \Photog\Image2::parse_dims($dims, $meta[0], $meta[1]);
+        $dims = \Photog\Image::parse_dims($dims, $meta[0], $meta[1]);
         $raw->resizeImage($dims[0], $dims[1], Imagick::FILTER_LANCZOS, 0);
     });
 
