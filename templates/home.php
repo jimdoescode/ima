@@ -9,9 +9,9 @@
         <meta name="author" content="Jim"/>
 
         <!-- Le styles -->
-        <link href="<?=\Photog\configured_path('base_url', 'css/bootstrap.min.css');?>" media="all" type="text/css" rel="stylesheet">
-        <link href="<?=\Photog\configured_path('base_url', 'css/font-awesome.css');?>" media="all" type="text/css" rel="stylesheet">
-        <link href="<?=\Photog\configured_path('base_url', 'css/style.css');?>" media="all" type="text/css" rel="stylesheet">
+        <link href="<?=\IMA\configured_path('base_url', 'css/bootstrap.min.css');?>" media="all" type="text/css" rel="stylesheet">
+        <link href="<?=\IMA\configured_path('base_url', 'css/font-awesome.css');?>" media="all" type="text/css" rel="stylesheet">
+        <link href="<?=\IMA\configured_path('base_url', 'css/style.css');?>" media="all" type="text/css" rel="stylesheet">
 
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -20,7 +20,7 @@
         <!-- Le JQuery, for easy JavaScript -->
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         <script type="text/javascript">
-            BASE_URL = '<?=\Photog\Config::main('base_url');?>';
+            BASE_URL = '<?=\IMA\Config::main('base_url');?>';
         </script>
     </head>
     <body>
@@ -28,7 +28,7 @@
             <div class="navbar-inner">
                 <div class="container">
                     <ul class="nav pull-right">
-                        <li><a href='#'><i class="icon-github"></i> GitHub</a></li>
+                        <li><a href='https://github.com/jimdoescode/ima'><i class="icon-github"></i> GitHub</a></li>
                     </ul>
                 </div>
             </div>
@@ -81,33 +81,33 @@
                 <div class="span3">
                     <h2>Resize <i class="icon-resize-small"></i></h2>
                     <p>Use this route to resize an image:</p>
-                    <p><abbr title="Ex. <?=\Photog\Config::main('base_url');?>/resize/80x50?src=...">/resize/&lt;width&gt;x&lt;height&gt;</abbr></p>
+                    <p><abbr title="Ex. <?=\IMA\Config::main('base_url');?>/resize/80x50?src=...">/resize/&lt;width&gt;x&lt;height&gt;</abbr></p>
                     <p>Where width and height are the pixel dimensions you wish to resize an image to. You also have the option to specify a few dimension aliases like 'thumbnail' and 'default':</p>
-                    <p><abbr title="Ex. <?=\Photog\Config::main('base_url');?>/resize/thumbnail?src=...">/resize/thumbnail</abbr> <small class="muted">Dimensions: 80x</small></p>
-                    <p><abbr title="Ex. <?=\Photog\Config::main('base_url');?>/resize/default?src=...">/resize/default</abbr> <small class="muted">Dimensions: 640x</small></p>
+                    <p><abbr title="Ex. <?=\IMA\Config::main('base_url');?>/resize/thumbnail?src=...">/resize/thumbnail</abbr> <small class="muted">Dimensions: 80x</small></p>
+                    <p><abbr title="Ex. <?=\IMA\Config::main('base_url');?>/resize/default?src=...">/resize/default</abbr> <small class="muted">Dimensions: 640x</small></p>
                     <p>Finally if you want to uniformly scale an image based only on width or height you can optionally leave one dimension blank:</p>
-                    <p><abbr title="Ex. <?=\Photog\Config::main('base_url');?>/resize/80x?src=...">/resize/&lt;width&gt;x</abbr></p>
-                    <p><abbr title="Ex. <?=\Photog\Config::main('base_url');?>/resize/x50?src=...">/resize/x&lt;height&gt;</abbr></p>
+                    <p><abbr title="Ex. <?=\IMA\Config::main('base_url');?>/resize/80x?src=...">/resize/&lt;width&gt;x</abbr></p>
+                    <p><abbr title="Ex. <?=\IMA\Config::main('base_url');?>/resize/x50?src=...">/resize/x&lt;height&gt;</abbr></p>
                     <p><span class="label label-important">Default Value</span> If no dimensions are specified then the 'default' dimension alias is used.</p>
                 </div>
                 <div class="span3">
                     <h2>Rotate <i class="icon-retweet"></i></h2>
                     <p>Use this route to rotate an image:</p>
-                    <p><abbr title="Ex. <?=\Photog\Config::main('base_url');?>/rotate/30?src=...">/rotate/&lt;degrees&gt;</abbr></p>
+                    <p><abbr title="Ex. <?=\IMA\Config::main('base_url');?>/rotate/30?src=...">/rotate/&lt;degrees&gt;</abbr></p>
                     <p>Where degrees are specified as the amount of rotation for the image. Note that you can also specify negative degrees.</p>
                     <p><span class="label label-important">Default Value</span> If no rotation is specified then the default value is '-90'</p>
                 </div>
                 <div class="span3">
                     <h2>Crop <i class="icon-cut"></i></h2>
                     <p>Use this route to crop an image:</p>
-                    <p><abbr title="Ex. <?=\Photog\Config::main('base_url');?>/crop/100,120/200,240?src=...">/crop/&lt;x&gt;,&lt;y&gt;/&lt;x&gt;,&lt;y&gt;</abbr></p>
+                    <p><abbr title="Ex. <?=\IMA\Config::main('base_url');?>/crop/100,120/200,240?src=...">/crop/&lt;x&gt;,&lt;y&gt;/&lt;x&gt;,&lt;y&gt;</abbr></p>
                     <p>Where the first set of points define the top right corner of the area that will be cropped. The second <strong>optional</strong> set of points represent the bottom left point of the cropped area. If The second point isn't set then the bottom left corner is considered the bottom left corner of the image.</p>
                     <p><span class="label label-important">Default Value</span> If no points are specified then the image will not be cropped.</p>
                 </div>
                 <div class="span3">
                     <h2>Filter <i class="icon-filter"></i></h2>
                     <p>Use this route to add a filter to an image:</p>
-                    <p><abbr title="Ex. <?=\Photog\Config::main('base_url');?>/filter/blur/0,5?src=...">/filter/&lt;type&gt;/&lt;extra params&gt;</abbr></p>
+                    <p><abbr title="Ex. <?=\IMA\Config::main('base_url');?>/filter/blur/0,5?src=...">/filter/&lt;type&gt;/&lt;extra params&gt;</abbr></p>
                     <p>Where the type is the type of filter to apply. Currently the filter types are:</p>
                     <ul>
                         <li>Blur <small class="muted">Extra Params: &lt;radius&gt;,&lt;sigma&gt;</small></li>
@@ -125,7 +125,7 @@
             <div class="container"><p>&copy; <a href="http://jimsaunders.net">Jim Saunders</a> 2012</p></div>
         </footer>
 
-        <script src="<?=\Photog\configured_path('base_url', 'js/bootstrap.min.js');?>"></script>
-        <script src="<?=\Photog\configured_path('base_url', 'js/page.js');?>"></script>
+        <script src="<?=\IMA\configured_path('base_url', 'js/bootstrap.min.js');?>"></script>
+        <script src="<?=\IMA\configured_path('base_url', 'js/page.js');?>"></script>
     </body>
 </html>
