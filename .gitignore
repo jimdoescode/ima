@@ -3,3 +3,4 @@
 .DS_Store
 cache/remote/*
 cache/processed/*
+!.gitignore
