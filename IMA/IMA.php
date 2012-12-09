@@ -1,4 +1,4 @@
-<?php namespace Photog;
+<?php namespace IMA;
 
 require 'Config.php';
 require 'CacheMiddleware.php';

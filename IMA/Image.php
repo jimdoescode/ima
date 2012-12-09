@@ -1,4 +1,4 @@
-<?php namespace Photog;
+<?php namespace IMA;
 
 class Image
 {

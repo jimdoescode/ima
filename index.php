@@ -13,7 +13,7 @@ ini_set('max_execution_time', 360);
 require 'Slim/Slim.php';
 \Slim\Slim::registerAutoloader();
 
-require 'Photog/Photog.php';
+require 'IMA/IMA.php';
 
 /**
  * Step 2: Instantiate a Slim application
@@ -27,7 +27,7 @@ $app = new \Slim\Slim();
 
 //Add middleware that will see if the url has already
 //been processed and thusly we have an image for it.
-$app->add(new \Photog\CacheMiddleware());
+$app->add(new \IMA\CacheMiddleware());
 
 /**
  * Step 3: Define the Slim application routes
@@ -48,13 +48,13 @@ $app->get('/', function() use($app)
  */
 $app->get('/resize(/:dims)', function($dims = 'default') use($app)
 {
-    \Photog\run($app, function(&$raw, $meta) use($dims)
+    \IMA\run($app, function(&$raw, $meta) use($dims)
     {
-        $dims = \Photog\Image::parse_dims($dims, $meta[0], $meta[1]);
+        $dims = \IMA\Image::parse_dims($dims, $meta[0], $meta[1]);
         $raw->resizeImage($dims[0], $dims[1], Imagick::FILTER_LANCZOS, 0);
     });
 
-})->conditions(array('dims' => '\d+x\d+|\d+x|x\d+|'.implode('|', array_keys(\Photog\Config::resize('dimension_aliases')->raw()))));
+})->conditions(array('dims' => '\d+x\d+|\d+x|x\d+|'.implode('|', array_keys(\IMA\Config::resize('dimension_aliases')->raw()))));
 
 /**
  * Route to rotate an image
@@ -62,7 +62,7 @@ $app->get('/resize(/:dims)', function($dims = 'default') use($app)
  */
 $app->get('/rotate(/:deg)', function($deg = -90) use($app)
 {
-    \Photog\run($app, function(&$raw, $meta) use($deg)
+    \IMA\run($app, function(&$raw, $meta) use($deg)
     {
         $raw->rotateImage(new ImagickPixel('#00000000'), $deg);
     });
@@ -76,10 +76,10 @@ $app->get('/rotate(/:deg)', function($deg = -90) use($app)
  */
 $app->get('/crop/:tl(/:br)', function($tl, $br = null) use($app)
 {
-    \Photog\run($app, function(&$raw, $meta) use($tl, $br)
+    \IMA\run($app, function(&$raw, $meta) use($tl, $br)
     {
-        $tl = \Photog\Image::parse_point($tl, 0, 0);
-        $br = \Photog\Image::parse_point($br, $meta[0], $meta[1]);
+        $tl = \IMA\Image::parse_point($tl, 0, 0);
+        $br = \IMA\Image::parse_point($br, $meta[0], $meta[1]);
 
         $width  = $br[0] - $tl[0];
         $height = $br[1] - $tl[1];
@@ -96,14 +96,14 @@ $app->get('/crop/:tl(/:br)', function($tl, $br = null) use($app)
  */
 $app->get('/filter/:type(/:params)', function($type, $params = null) use($app)
 {
-    \Photog\run($app, function(&$raw, $meta) use($type, $params)
+    \IMA\run($app, function(&$raw, $meta) use($type, $params)
     {
-        $args = \Photog\Image::parse_point($params, 0, 1);
-        $filters = \Photog\Config::filter('types');
+        $args = \IMA\Image::parse_point($params, 0, 1);
+        $filters = \IMA\Config::filter('types');
         call_user_func_array(array($raw, $filters[$type]), $args);
     });
 
-})->conditions(array('type' => implode('|', array_keys(\Photog\Config::filter('types')->raw()))));;
+})->conditions(array('type' => implode('|', array_keys(\IMA\Config::filter('types')->raw()))));;
 
 /**
  * Step 4: Run the Slim application
