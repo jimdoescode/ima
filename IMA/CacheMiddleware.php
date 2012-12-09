@@ -9,7 +9,7 @@ class CacheMiddleware extends \Slim\Middleware
 
         if(array_key_exists('src', $_GET) && !empty($_GET['src']))
         {
-            $path = \Photog\configured_path('processed_cache_directory', md5($req->getPath().$_GET['src']));
+            $path = \IMA\configured_path('processed_cache_directory', md5($req->getPath().$_GET['src']));
 
             if(file_exists($path))
             {
