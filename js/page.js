@@ -15,12 +15,7 @@ $(function()
                 if(elm.value !== '')url += '?src='+elm.value;
                 else return false;
             }
-            else
-            {
-                url += '/';
-                if(elm.value !== '')url += elm.value;
-                else return false;
-            }
+            else if(elm.value !== '' )url += '/'+elm.value;
         });
 
         if(url.match(/\?src=/) === null)alert('You need to enter a source image.');

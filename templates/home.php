@@ -39,7 +39,7 @@
                 <p>Alter web images with simple URL routes. All you need to do is specify the source image.</p>
                 <form id="ima-form" class="well">
                     <h3>Try it out</h3>
-                    <select name="operation" required="true">
+                    <select name="operation">
                         <option value="">-Operation-</option>
                         <option value="resize">/resize</option>
                         <option value="rotate">/rotate</option>
@@ -48,17 +48,17 @@
                     </select>
                     <div id="resize" class="hide">
                         <strong>/</strong>
-                        <input name="resize" type="text" placeholder="Resize Dimensions WxH"/>
+                        <input name="resize" class="optional" type="text" placeholder="Resize Dimensions WxH"/>
                     </div>
                     <div id="rotate" class="hide">
                         <strong>/</strong>
-                        <input name="rotate" type="text" placeholder="Rotation Amount"/>
+                        <input name="rotate" class="optional" type="text" placeholder="Rotation Amount"/>
                     </div>
                     <div id="crop" class="hide">
                         <strong>/</strong>
                         <input name="crop-tl" type="text" placeholder="Top Left Corner X,Y"/>
                         <strong>/</strong>
-                        <input name="crop-br" type="text" placeholder="Bottom Right Corner X,Y"/>
+                        <input name="crop-br" class="optional" type="text" placeholder="Bottom Right Corner X,Y"/>
                     </div>
                     <div id="filter" class="hide">
                         <select name="filter">
@@ -69,10 +69,10 @@
                             <option value="sharpen">/sharpen</option>
                         </select>
                         <strong>/</strong>
-                        <input name="extra" type="text" placeholder="Extra Params P1,P2"/>
+                        <input name="extra" class="optional" type="text" placeholder="Extra Params P1,P2"/>
                     </div>
                     <strong>?src=</strong>
-                    <input name="src" type="text" required="true" placeholder="Image URL"/>
+                    <input name="src" type="text" placeholder="Image URL"/>
                     <br/>
                     <input type="submit" class="btn btn-success btn-large" value="Submit"/>
                 </form>
