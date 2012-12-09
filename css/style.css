@@ -1,0 +1,10 @@
+footer a {
+    color: #ece9d7;
+    text-decoration: underline;
+}
+#ima-form {
+    margin-top: 15px;
+    text-align: center;;
+}
+.hero-unit {padding: 0;}
+.hide {display: none;}
