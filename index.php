@@ -1,7 +1,5 @@
 <?php
 
-ini_set('max_execution_time', 360);
-
 /**
  * Step 1: Require the Slim Framework
  *

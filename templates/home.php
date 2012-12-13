@@ -106,6 +106,7 @@
                 </div>
                 <div class="span3">
                     <h2>Filter <i class="icon-filter"></i></h2>
+                    <p><span class="label label-warning">Warning</span> Filters don't currently work with animated GIFs</p>
                     <p>Use this route to add a filter to an image:</p>
                     <p><abbr title="Ex. <?=\IMA\Config::main('base_url');?>/filter/blur/0,5?src=...">/filter/&lt;type&gt;/&lt;extra params&gt;</abbr></p>
                     <p>Where the type is the type of filter to apply. Currently the filter types are:</p>
